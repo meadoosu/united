@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>United Settings</title>
+
+  <link rel="icon" href="media/favicon.jpeg">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div class="navbar">
+    <div class="nav-title">Settings</div>
+    <div class="nav-actions">
+      <button onclick="location.href='index.html'">Back</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2 class="section-title">Appearance</h2>
+
+    <div style="max-width:400px;margin:auto">
+      <label>Site Title</label>
+      <input id="titleInput" style="width:100%;margin:8px 0">
+
+      <label>Favicon URL</label>
+      <input id="faviconInput" style="width:100%;margin:8px 0">
+
+      <button onclick="saveSettings()">Save</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('titleInput').value =
+      localStorage.getItem('siteTitle') || '';
+
+    document.getElementById('faviconInput').value =
+      localStorage.getItem('siteFavicon') || 'media/favicon.jpeg';
+
+    function saveSettings() {
+      localStorage.setItem('siteTitle',
+        document.getElementById('titleInput').value);
+
+      localStorage.setItem('siteFavicon',
+        document.getElementById('faviconInput').value);
+
+      alert('Saved! Reload pages to apply everywhere.');
+    }
+  </script>
+
+</body>
+</html>

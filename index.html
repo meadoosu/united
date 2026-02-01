@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>United Soundboard</title>
+
+  <link rel="icon" href="media/favicon.jpeg">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div class="navbar">
+    <div class="nav-title">United</div>
+    <div class="nav-actions">
+      <button onclick="location.href='game.html'">Game</button>
+      <button onclick="location.href='settings.html'">Settings</button>
+      <button onclick="openBlank()">about:blank</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2 class="section-title">Soundboard</h2>
+    <div class="grid"></div>
+  </div>
+
+  <script>
+    function openBlank() {
+      const t = window.open('about:blank','_blank');
+      t.document.write(document.documentElement.outerHTML);
+      t.document.close();
+    }
+  </script>
+
+</body>
+</html>

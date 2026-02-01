@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>United Games</title>
+
+  <link rel="icon" href="media/favicon.jpeg">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div class="navbar">
+    <div class="nav-title">United</div>
+    <div class="nav-actions">
+      <button onclick="location.href='index.html'">Soundboard</button>
+      <button onclick="alert('Contact coming soon')">Contact</button>
+      <button onclick="openBlank()">about:blank</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2 class="section-title">Games</h2>
+
+    <div class="game-grid">
+      <div class="game-card" onclick="openGame('games/reaction.html')">
+        <img src="media/reaction.png" class="game-icon">
+        <div class="game-name">Reaction</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openGame(path) {
+      const tab = window.open('about:blank', '_blank');
+      fetch(path).then(r => r.text()).then(html => {
+        tab.document.write(html);
+        tab.document.close();
+      });
+    }
+
+    function openBlank() {
+      const t = window.open('about:blank','_blank');
+      t.document.write(document.documentElement.outerHTML);
+      t.document.close();
+    }
+  </script>
+
+</body>
+</html>
