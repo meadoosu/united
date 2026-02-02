@@ -1,53 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>United Settings</title>
-
-  <link rel="icon" href="media/favicon.jpeg">
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+  <meta charset="UTF-8" />
+  <title>United – Settings</title>
+  <link rel="icon" href="media/favicon.jpeg" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <div class="navbar">
-    <div class="nav-title">Settings</div>
-    <div class="nav-actions">
-      <button onclick="location.href='index.html'">Back</button>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-left">United</div>
+    <div class="nav-center" id="quote"></div>
+    <div class="nav-right">
+      <a href="index.html">Soundboard</a>
+      <a href="game.html">Games</a>
+      <a href="settings.html">Settings</a>
+      <a href="contact.html">Contact</a>
+      <a href="about:blank" target="_blank">about:blank</a>
     </div>
-  </div>
+  </nav>
 
-  <div class="container">
-    <h2 class="section-title">Appearance</h2>
+  <!-- CONTENT -->
+  <main class="container center">
+    <div class="settings-card">
 
-    <div style="max-width:400px;margin:auto">
-      <label>Site Title</label>
-      <input id="titleInput" style="width:100%;margin:8px 0">
+      <h2>Preset</h2>
 
-      <label>Favicon URL</label>
-      <input id="faviconInput" style="width:100%;margin:8px 0">
+      <div class="settings-row">
+        <select id="preset-select"></select>
+        <button id="apply-preset">Apply</button>
+      </div>
 
-      <button onclick="saveSettings()">Save</button>
+      <p class="settings-hint">
+        Presets change the site title and favicon.
+      </p>
+
     </div>
-  </div>
+  </main>
 
-  <script>
-    document.getElementById('titleInput').value =
-      localStorage.getItem('siteTitle') || '';
-
-    document.getElementById('faviconInput').value =
-      localStorage.getItem('siteFavicon') || 'media/favicon.jpeg';
-
-    function saveSettings() {
-      localStorage.setItem('siteTitle',
-        document.getElementById('titleInput').value);
-
-      localStorage.setItem('siteFavicon',
-        document.getElementById('faviconInput').value);
-
-      alert('Saved! Reload pages to apply everywhere.');
-    }
-  </script>
-
+  <script src="script.js"></script>
 </body>
 </html>

@@ -1,36 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>United Soundboard</title>
-
-  <link rel="icon" href="media/favicon.jpeg">
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+  <meta charset="UTF-8" />
+  <title>Home - Google Drive</title>
+  <link rel="icon" href="">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <div class="navbar">
-    <div class="nav-title">United</div>
-    <div class="nav-actions">
-      <button onclick="location.href='game.html'">Game</button>
-      <button onclick="location.href='settings.html'">Settings</button>
-      <button onclick="openBlank()">about:blank</button>
-    </div>
+<nav class="navbar">
+  <div class="nav-left">United</div>
+  <div class="nav-center" id="quote"></div>
+  <div class="nav-right">
+    <a href="index.html">Soundboard</a>
+    <a href="game.html">Games</a>
+    <a href="settings.html">Settings</a>
+    <a href="contact.html">Contact</a>
+    <a href="#" id="open-blank">about:blank</a>
   </div>
+</nav>
 
-  <div class="container">
-    <h2 class="section-title">Soundboard</h2>
-    <div class="grid"></div>
-  </div>
+<main class="container">
+  <div id="soundboard" class="grid"></div>
+</main>
 
-  <script>
-    function openBlank() {
-      const t = window.open('about:blank','_blank');
-      t.document.write(document.documentElement.outerHTML);
-      t.document.close();
-    }
-  </script>
+<div class="pagination">
+  <button id="prev">◀</button>
+  <span id="page-info"></span>
+  <button id="next">▶</button>
+</div>
 
+<script src="script.js"></script>
 </body>
 </html>
