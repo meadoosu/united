@@ -27,17 +27,17 @@
       document.write("No ROM specified");
     }
 
-    // REQUIRED EmulatorJS globals
+  
     window.EJS_player = "#game";
     window.EJS_core = "nds";
     window.EJS_gameUrl = rom;
 
-    // VERY IMPORTANT paths
+    
     window.EJS_pathtodata = "/emulatorjs/data/";
     window.EJS_pathToCores = "/emulatorjs/cores/";
   </script>
 
-  <!-- load EmulatorJS LAST -->
+
   <script src="/emulatorjs/loader.js"></script>
 </head>
 <body>
