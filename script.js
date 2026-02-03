@@ -7,11 +7,9 @@ fetch("presets.json")
   .then(data => {
     presetData = data;
 
-    // Apply saved preset or default
     const saved = localStorage.getItem(PRESET_KEY) || "united";
     applyPreset(saved);
 
-    // Populate settings dropdown if present
     const select = document.getElementById("preset-select");
     if (select) {
       Object.keys(presetData).forEach(key => {
@@ -28,10 +26,8 @@ function applyPreset(name) {
   const p = presetData[name];
   if (!p) return;
 
-  // Title
   document.title = p.title;
 
-  // Favicon
   let link = document.querySelector("link[rel='icon']");
   if (!link) {
     link = document.createElement("link");
@@ -43,7 +39,6 @@ function applyPreset(name) {
   localStorage.setItem(PRESET_KEY, name);
 }
 
-// Apply button (settings page)
 document.getElementById("apply-preset")?.addEventListener("click", () => {
   const val = document.getElementById("preset-select").value;
   applyPreset(val);
@@ -52,21 +47,7 @@ document.getElementById("apply-preset")?.addEventListener("click", () => {
 
 /* ---------- QUOTES ---------- */
 const quotes = [
-  "scared mustache 445",
-  "ms gandhi bad as hell icl put me onto her",
-  "built by us for us",
-  "i have a hole in my shoes",
-  "use responsibly or not, we arent ur dad",
-  "iker's ms czerwonka's story is interesting",
-  "i wish ms havnoonian could just take off her shirt",
-  "ms velasquez deserves this adicktion",
-  "Dr Chaves is prob mad tight",
-  "Ms Mustain should lwk just start twerking during class",
-  "fuck zahirs treecko",
-  "damn thats nice",
-  "fuck the nigs",
-  "welcome to the revival boys",
-  "made by angle"
+  "scared mustache 445"
 ];
 
 const quoteEl = document.getElementById("quote");
@@ -78,6 +59,7 @@ if (quoteEl) {
     quoteEl.textContent = quotes[i];
   }, 4000);
 }
+
 
 /* ---------- SOUNDBOARD ---------- */
 const board = document.getElementById("soundboard");
@@ -92,7 +74,6 @@ if (board) {
   fetch("sounds/index.json")
     .then(res => res.json())
     .then(data => {
-      // data is an array of filenames
       sounds = data;
       render();
     });
@@ -124,7 +105,6 @@ function render() {
 }
 
 function toggleSound(card, file) {
-  // If clicking the same card that's already playing → STOP
   if (audio && currentCard === card) {
     audio.pause();
     audio.currentTime = 0;
@@ -134,7 +114,6 @@ function toggleSound(card, file) {
     return;
   }
 
-  // Otherwise stop whatever was playing
   if (audio) {
     audio.pause();
     audio.currentTime = 0;
@@ -143,9 +122,7 @@ function toggleSound(card, file) {
   document.querySelectorAll(".card.playing")
     .forEach(c => c.classList.remove("playing"));
 
-  // Start new sound
-  const src = `sounds/${encodeURIComponent(file)}`;
-  audio = new Audio(src);
+  audio = new Audio(`sounds/${encodeURIComponent(file)}`);
   currentCard = card;
 
   card.classList.add("playing");
@@ -157,6 +134,7 @@ function toggleSound(card, file) {
     currentCard = null;
   };
 }
+
 
 /* ---------- PAGINATION ---------- */
 document.getElementById("prev")?.addEventListener("click", () => {
@@ -173,37 +151,26 @@ document.getElementById("next")?.addEventListener("click", () => {
   }
 });
 
+
 /* ---------- GAMES ---------- */
-document.querySelectorAll(".game-card").forEach(card => {
+
+/* Web games (HTML files) */
+document.querySelectorAll(".game-card[data-game]").forEach(card => {
   card.addEventListener("click", () => {
-    const win = window.open("about:blank", "_blank");
-    fetch(card.dataset.game)
-      .then(r => r.text())
-      .then(html => win.document.write(html));
+    const gamePath = card.dataset.game;
+    if (!gamePath) return;
+
+    window.open(gamePath, "_blank");
   });
+});
 
-  
-  /* ---------- OPEN CURRENT PAGE IN about:blank ---------- */
-  const blankLink = document.getElementById("open-blank");
+/* DS games (EmulatorJS) */
+document.querySelectorAll(".ds-game").forEach(card => {
+  card.addEventListener("click", () => {
+    const rom = card.dataset.rom;
+    if (!rom) return;
 
-  if (blankLink) {
-    blankLink.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      const win = window.open("about:blank", "_blank");
-      if (!win) return;
-
-      // Clone the entire current document
-      const doc = win.document;
-      doc.open();
-      doc.write("<!DOCTYPE html>");
-      doc.write(document.documentElement.outerHTML);
-      doc.close();
-
-      // Fix relative paths (critical)
-      const base = doc.createElement("base");
-      base.href = window.location.href;
-      doc.head.prepend(base);
-    });
-  }
+    const url = `games/ds.html?rom=${encodeURIComponent("../" + rom)}`;
+    window.open(url, "_blank");
+  });
 });
