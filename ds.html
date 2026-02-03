@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nintendo DS</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      overflow: hidden;
+    }
+
+    #game {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const rom = params.get("rom");
+
+    if (!rom) {
+      document.write("No ROM specified");
+    }
+
+    // REQUIRED EmulatorJS globals
+    window.EJS_player = "#game";
+    window.EJS_core = "nds";
+    window.EJS_gameUrl = rom;
+
+    // VERY IMPORTANT paths
+    window.EJS_pathtodata = "/emulatorjs/data/";
+    window.EJS_pathToCores = "/emulatorjs/cores/";
+  </script>
+
+  <!-- load EmulatorJS LAST -->
+  <script src="/emulatorjs/loader.js"></script>
+</head>
+<body>
+  <div id="game"></div>
+</body>
+</html>
