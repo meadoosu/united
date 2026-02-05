@@ -8,7 +8,6 @@
 </head>
 <body>
 
-  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-left">United</div>
     <div class="nav-center" id="quote"></div>
@@ -17,15 +16,15 @@
       <a href="game.html">Games</a>
       <a href="settings.html">Settings</a>
       <a href="contact.html">Contact</a>
-      <a href="about:blank" target="_blank">about:blank</a>
+      <a href="chat/chat.html">Chat</a>
+      
     </div>
   </nav>
 
-  <!-- CONTENT -->
+
   <main class="container">
     <div class="grid">
 
-      <!-- WEB GAMES (UNCHANGED) -->
       <div class="card game-card" data-game="games/2048.html">
         <img src="media/2048.png">
         <span>2048</span>
@@ -55,27 +54,67 @@
         <img src="media/geometrydash.png">
         <span>Geometry Dash Scratch</span>
       </div>
+      
 
       <div class="card game-card" data-game="games/eaglercraft.html">
         <img src="media/minecraft.png">
         <span>Eaglercraft (Minecraft)</span>
       </div>
 
-      <!-- DS GAMES (NEW) -->
-      <div class="card game-card ds-game" data-rom="roms/supermariobros.nds">
-        <img src="media/supermariobros.png">
-        <span>Mario DS</span>
+      <div class="card game-card" data-game="games/supermario64.html">
+        <img src="media/64.png">
+        <span>Super Mario 64</span>
       </div>
 
-      <div class="card game-card ds-game" data-rom="roms/adventure.nds">
+      <div class="card game-card" data-game="games/spacebarclicker.html">
+        <img src="media/spacebar.png">
+        <span>Spacebar Clicker</span>
+      </div>
+
+      <div class="card game-card" data-game="games/fluidsimulator.html">
+        <img src="media/fluidsimulator.png">
+        <span>Fluid Simulator</span>
+      </div>
+
+      <div
+        class="card game-card ds-game"
+        data-rom="https://pub-828c5b698fb149f1baa5399261ed5897.r2.dev/newsupermariobros.nds"
+      >
+        <img src="media/super.png">
+        <span>Super Mario Bros DS</span>
+      </div>
+
+      <div
+        class="card game-card ds-game"
+        data-rom="https://pub-828c5b698fb149f1baa5399261ed5897.r2.dev/adventure.nds"
+      >
         <img src="media/adventure.jpeg">
-        <span>Adventure Time DS</span>
+        <span>Adventure Time - Hey Ice King! Why'd You Steal Our Garbage!!</span>
+      </div>
+      
+      <div
+        class="card game-card ds-game"
+        data-rom="https://pub-828c5b698fb149f1baa5399261ed5897.r2.dev/marioparty.nds"
+      >
+        <img src="media/marioparty.jpeg">
+        <span>Mario Party DS</span>
       </div>
 
-      <div class="card game-card ds-game" data-rom="roms/zelda.nds">
-        <img src="media/zelda.png">
-        <span>Zelda DS</span>
+      <div
+        class="card game-card ds-game"
+        data-rom="https://pub-828c5b698fb149f1baa5399261ed5897.r2.dev/warioware.nds"
+      >
+        <img src="media/warioware.jpeg">
+        <span>Warioware: Touched!</span>
       </div>
+
+      <div
+        class="card game-card ds-game"
+        data-rom="https://pub-828c5b698fb149f1baa5399261ed5897.r2.dev/nintendogs.nds"
+      >
+        <img src="media/nintendogs.jpg">
+        <span>Nintendogs</span>
+      </div> 
 
     </div>
   </main>
