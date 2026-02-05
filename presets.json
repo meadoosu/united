@@ -6,5 +6,9 @@
   "Amplify": {
     "title": "Amplify",
     "favicon": "media/amplify.png"
+  },
+  "Clever": {
+    "title": "Clever | Portal",
+    "favicon": "media/clever.png"
   }
 }
