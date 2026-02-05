@@ -1,0 +1,9 @@
+{
+  "apiKey": "ur api key",
+  "authDomain": "ur auth domain",
+  "databaseURL": "database url",
+  "projectId": "project id lolol",
+  "storageBucket": "storage bucket",
+  "messagingSenderId": "messaging sender id",
+  "appId": "app id"
+}
