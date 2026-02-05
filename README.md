@@ -1,13 +1,13 @@
-<h1 align="center">🌐 United</h1>
+<h1 align="center">United</h1>
 
 <p align="center">
-  <b>A personal web platform bringing games, a soundboard, and chat together — all in one place.</b><br>
-  Built for fun, experimentation, and a little bit of chaos.
+  <b>A personal web platform bringing games, a soundboard, and chat together in one place</b><br>
+  Built for fun and out of straight boredom on a weekend
 </p>
 
 <hr>
 
-<h2>⚙️ Tech Stack</h2>
+<h2>Languages used :)</h2>
 
 <ul>
   <li>HTML</li>
