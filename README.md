@@ -7,7 +7,7 @@
 
 <hr>
 
-<h2>Languages used :)</h2>
+<h2>Languages used in this project. </h2>
 
 <ul>
   <li>HTML</li>
@@ -16,7 +16,7 @@
   <li>A pinch of JSON</li>
 </ul>
 
-<p><i>Nothing fancy — just lightweight tools that get the job done.</i></p>
+<p><b>nothing <i>too</i> over the top tbh</b></p>
 
 <hr>
 
