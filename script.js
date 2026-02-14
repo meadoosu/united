@@ -1,176 +1,256 @@
-/* ---------- TITLE + FAVICON PRESETS ---------- */
-const PRESET_KEY = "activePreset";
-let presetData = {};
+/* ===============================
+   LOAD CONFIG.JSON
+================================ */
 
-fetch("presets.json")
+let CONFIG = {};
+
+fetch("config.json")
   .then(r => r.json())
-  .then(data => {
-    presetData = data;
+  .then(cfg => {
+    CONFIG = cfg;
 
-    const saved = localStorage.getItem(PRESET_KEY) || "united";
-    applyPreset(saved);
+    initPresets();
+    initQuotes();
+    initSounds();
+    initGames();
+  })
+  .catch(err => console.error("Config failed:", err));
 
-    const select = document.getElementById("preset-select");
-    if (select) {
-      Object.keys(presetData).forEach(key => {
-        const opt = document.createElement("option");
-        opt.value = key;
-        opt.textContent = key;
-        select.appendChild(opt);
-      });
-      select.value = saved;
-    }
+
+
+/* ===============================
+   PRESETS (TAB CLOAK)
+================================ */
+
+function initPresets() {
+  const select = document.getElementById("preset-select");
+  if (!select || !CONFIG.presets) return;
+
+  select.innerHTML = "";
+
+  Object.keys(CONFIG.presets).forEach(key => {
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = CONFIG.presets[key].name;
+    select.appendChild(opt);
   });
 
-function applyPreset(name) {
-  const p = presetData[name];
+  document.getElementById("apply-preset")?.addEventListener("click", () => {
+    const key = select.value;
+    localStorage.setItem("activePreset", key);
+    applyPreset(key);
+  });
+
+  const saved =
+    localStorage.getItem("activePreset") ||
+    Object.keys(CONFIG.presets)[0];
+
+  select.value = saved;
+  applyPreset(saved);
+}
+
+function applyPreset(key) {
+  const p = CONFIG.presets[key];
   if (!p) return;
 
   document.title = p.title;
 
-  let link = document.querySelector("link[rel='icon']");
-  if (!link) {
-    link = document.createElement("link");
-    link.rel = "icon";
-    document.head.appendChild(link);
+  let icon = document.querySelector("link[rel='icon']");
+  if (!icon) {
+    icon = document.createElement("link");
+    icon.rel = "icon";
+    document.head.appendChild(icon);
   }
-  link.href = p.favicon;
 
-  localStorage.setItem(PRESET_KEY, name);
+  icon.href = p.favicon;
 }
 
-document.getElementById("apply-preset")?.addEventListener("click", () => {
-  const val = document.getElementById("preset-select").value;
-  applyPreset(val);
-});
 
 
-/* ---------- QUOTES ---------- */
-const quotes = [
-  "scared mustache 445"
-];
+/* ===============================
+   QUOTES (FIXED ROTATION)
+================================ */
 
-const quoteEl = document.getElementById("quote");
-if (quoteEl) {
-  let i = 0;
-  quoteEl.textContent = quotes[0];
+let quoteIndex = 0;
+
+function initQuotes() {
+  const quoteBox = document.getElementById("quote");
+  if (!quoteBox || !CONFIG.quotes?.length) return;
+
+  quoteIndex = Math.floor(Math.random() * CONFIG.quotes.length);
+  quoteBox.textContent = CONFIG.quotes[quoteIndex];
+
   setInterval(() => {
-    i = (i + 1) % quotes.length;
-    quoteEl.textContent = quotes[i];
+    quoteIndex++;
+
+    if (quoteIndex >= CONFIG.quotes.length) {
+      quoteIndex = 0;
+    }
+
+    quoteBox.textContent = CONFIG.quotes[quoteIndex];
   }, 4000);
 }
 
 
-/* ---------- SOUNDBOARD ---------- */
-const board = document.getElementById("soundboard");
-const perPage = 27;
+
+/* ===============================
+   SOUNDBOARD (27 PER PAGE)
+================================ */
 
 let sounds = [];
 let page = 0;
-let audio = null;
+const PER_PAGE = 24;
+
+let currentAudio = null;
 let currentCard = null;
 
-if (board) {
-  fetch("sounds/index.json")
-    .then(res => res.json())
-    .then(data => {
-      sounds = data;
-      render();
-    });
+function initSounds() {
+  const board = document.getElementById("soundboard");
+  if (!board) return;
+
+  sounds = CONFIG.sounds || [];
+  renderSounds();
 }
 
-function render() {
+function renderSounds() {
+  const board = document.getElementById("soundboard");
+  if (!board) return;
+
   board.innerHTML = "";
 
-  const start = page * perPage;
-  const end = start + perPage;
-  const slice = sounds.slice(start, end);
+  const start = page * PER_PAGE;
+  const end = start + PER_PAGE;
 
-  slice.forEach(file => {
-    const displayName = file.replace(/\.mp3$/i, "");
+  sounds.slice(start, end).forEach(file => {
+    const name = file.replace(/\.[^/.]+$/, "");
 
     const card = document.createElement("div");
     card.className = "card";
-    card.innerHTML = `<div>▶</div><span>${displayName}</span>`;
 
-    card.addEventListener("click", () => toggleSound(card, file));
+    const icon = document.createElement("div");
+    icon.className = "play-icon";
+    icon.textContent = "▶";
+
+    const label = document.createElement("span");
+    label.textContent = name;
+
+    card.appendChild(icon);
+    card.appendChild(label);
+
+    const audio = new Audio(`sounds/${file}`);
+
+    card.addEventListener("click", () => {
+
+      /* CLICK SAME SOUND = STOP */
+      if (currentAudio === audio && !audio.paused) {
+        audio.pause();
+        audio.currentTime = 0;
+        icon.textContent = "▶";
+        card.classList.remove("playing");
+        currentAudio = null;
+        currentCard = null;
+        return;
+      }
+
+      /* STOP OTHER SOUND */
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+
+        if (currentCard) {
+          currentCard.classList.remove("playing");
+          currentCard.querySelector(".play-icon").textContent = "▶";
+        }
+      }
+
+      /* PLAY NEW */
+      audio.play();
+      icon.textContent = "❚❚";
+      card.classList.add("playing");
+
+      currentAudio = audio;
+      currentCard = card;
+
+      audio.onended = () => {
+        icon.textContent = "▶";
+        card.classList.remove("playing");
+        currentAudio = null;
+        currentCard = null;
+      };
+    });
+
     board.appendChild(card);
   });
 
-  const pageInfo = document.getElementById("page-info");
-  if (pageInfo) {
-    pageInfo.textContent =
-      `Page ${page + 1} / ${Math.max(1, Math.ceil(sounds.length / perPage))}`;
+  const info = document.getElementById("page-info");
+  if (info) {
+    info.textContent =
+      `Page ${page + 1} / ${Math.max(1, Math.ceil(sounds.length / PER_PAGE))}`;
   }
 }
 
-function toggleSound(card, file) {
-  if (audio && currentCard === card) {
-    audio.pause();
-    audio.currentTime = 0;
-    card.classList.remove("playing");
-    audio = null;
-    currentCard = null;
-    return;
-  }
-
-  if (audio) {
-    audio.pause();
-    audio.currentTime = 0;
-  }
-
-  document.querySelectorAll(".card.playing")
-    .forEach(c => c.classList.remove("playing"));
-
-  audio = new Audio(`sounds/${encodeURIComponent(file)}`);
-  currentCard = card;
-
-  card.classList.add("playing");
-  audio.play();
-
-  audio.onended = () => {
-    card.classList.remove("playing");
-    audio = null;
-    currentCard = null;
-  };
-}
 
 
-/* ---------- PAGINATION ---------- */
+/* ===============================
+   PAGINATION
+================================ */
+
 document.getElementById("prev")?.addEventListener("click", () => {
   if (page > 0) {
     page--;
-    render();
+    renderSounds();
   }
 });
 
 document.getElementById("next")?.addEventListener("click", () => {
-  if ((page + 1) * perPage < sounds.length) {
+  if ((page + 1) * PER_PAGE < sounds.length) {
     page++;
-    render();
+    renderSounds();
   }
 });
 
 
-/* ---------- GAMES ---------- */
 
-/* Web games (HTML files) */
-document.querySelectorAll(".game-card[data-game]").forEach(card => {
-  card.addEventListener("click", () => {
-    const gamePath = card.dataset.game;
-    if (!gamePath) return;
 
-    window.open(gamePath, "_blank");
+/* ===============================
+   GAMES (HTML + EMULATED)
+================================ */
+
+function initGames() {
+  const cards = document.querySelectorAll(".game-card");
+  if (!cards.length) return;
+
+  cards.forEach(card => {
+    card.style.cursor = "pointer";
+
+    card.addEventListener("click", () => {
+
+      /* CASE 1: EMULATED GAME (DS / ROM) */
+      if (card.classList.contains("ds-game")) {
+        const rom = card.dataset.rom;
+
+        if (!rom) {
+          console.warn("Missing data-rom on emulated card:", card);
+          return;
+        }
+
+        window.location.href =
+          `/emulator.html?rom=${encodeURIComponent(rom)}`;
+        return;
+      }
+
+      /* CASE 2: NORMAL HTML GAME */
+      const link = card.dataset.game;
+
+      if (!link) {
+        console.warn("Missing data-game on card:", card);
+        return;
+      }
+
+      window.location.href = link;
+    });
   });
-});
+}
 
-/* DS games (EmulatorJS) */
-document.querySelectorAll(".ds-game").forEach(card => {
-  card.addEventListener("click", () => {
-    const rom = card.dataset.rom;
-    if (!rom) return;
 
-    const url = `games/ds.html?rom=${encodeURIComponent("../" + rom)}`;
-    window.open(url, "_blank");
-  });
-});
+

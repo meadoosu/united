@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Emulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      height: 100%;
+    }
+
+    #game {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game"></div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const romUrl = params.get("rom");
+
+    if (!romUrl) {
+      document.body.innerHTML = "<h1 style='color:white'>No ROM provided</h1>";
+      throw new Error("No ROM URL");
+    }
+
+    window.EJS_player = "#game";
+    window.EJS_core = "nds";
+
+    /* THIS IS THE IMPORTANT FIX */
+    window.EJS_gameUrl = romUrl;
+    window.EJS_useExternalRoms = true;
+
+    /* match your file tree */
+    window.EJS_pathtodata = "/emulatorjs/data/";
+    window.EJS_pathToCores = "/emulatorjs/emulators/cores/";
+  </script>
+
+  <script src="/emulatorjs/data/loader.js"></script>
+</body>
+</html>
