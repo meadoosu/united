@@ -1,44 +1,61 @@
+/* ===============================
+   LOAD QUOTES FROM config.json
+================================ */
+
+let CONFIG = {};
+let quoteIndex = 0;
+
+fetch("../config.json")
+  .then(r => r.json())
+  .then(cfg => {
+    CONFIG = cfg;
+    initQuotes();
+  })
+  .catch(err => console.error("Quote load failed:", err));
+
+function initQuotes() {
+  const quoteBox = document.getElementById("quote");
+  if (!quoteBox || !CONFIG.quotes?.length) return;
+
+  // start on random quote
+  quoteIndex = Math.floor(Math.random() * CONFIG.quotes.length);
+  quoteBox.textContent = CONFIG.quotes[quoteIndex];
+
+  setInterval(() => {
+    quoteIndex = (quoteIndex + 1) % CONFIG.quotes.length;
+    quoteBox.textContent = CONFIG.quotes[quoteIndex];
+  }, 4000);
+}
+
+/* ===============================
+   USERNAME
+================================ */
+
 let username = localStorage.getItem("chatName");
+
 if (!username) {
   username = prompt("Enter a username:") || "Anonymous";
   localStorage.setItem("chatName", username);
 }
 
 /* ===============================
-   TITLE + FAVICON SYNC
+   LOAD CONFIG + FIREBASE
 ================================ */
-fetch("../presets.json")
-  .then(r => r.json())
-  .then(presets => {
-    const active = localStorage.getItem("activePreset") || "united";
-    const p = presets[active];
-    if (!p) return;
 
-    document.title = p.title;
+fetch("../config.json")
+.then(r => r.json())
+.then(cfg => {
+  firebase.initializeApp(cfg.firebase);
+  initChat();
+});
 
-    let link = document.querySelector("link[rel='icon']");
-    if (!link) {
-      link = document.createElement("link");
-      link.rel = "icon";
-      document.head.appendChild(link);
-    }
-    link.href = p.favicon;
-  })
-  .catch(() => {});
 
 /* ===============================
-   FIREBASE
+   TIME FORMATTER
 ================================ */
-fetch("firebase.json")
-  .then(r => r.json())
-  .then(cfg => {
-    firebase.initializeApp(cfg);
-    initChat();
-  });
 
 function formatTime(ts) {
-  const d = new Date(ts);
-  return d.toLocaleString("en-US", {
+  return new Date(ts).toLocaleString("en-US", {
     month: "2-digit",
     day: "2-digit",
     year: "numeric",
@@ -47,6 +64,10 @@ function formatTime(ts) {
     hour12: true
   });
 }
+
+/* ===============================
+   CHAT ENGINE
+================================ */
 
 function initChat() {
   const db = firebase.database();
@@ -58,16 +79,16 @@ function initChat() {
 
   messagesRef.limitToLast(150).on("child_added", snap => {
     const msg = snap.val();
-    const isMine = msg.user === username;
+    const mine = msg.user === username;
 
     const div = document.createElement("div");
-    div.className = `msg ${isMine ? "mine" : ""}`;
+    div.className = `msg ${mine ? "mine" : ""}`;
 
     div.innerHTML = `
       <div class="avatar">${msg.user[0].toUpperCase()}</div>
       <div class="bubble">
         <div class="user">${msg.user}</div>
-        <div class="text">${msg.text}</div>
+        <div>${msg.text}</div>
         <div class="time">${formatTime(msg.time)}</div>
       </div>
     `;
