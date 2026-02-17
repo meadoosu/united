@@ -5,9 +5,84 @@
   <title>Settings</title>
   <link rel="icon" href="media/favicon.jpeg" />
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Custom dropdown */
+    .custom-select-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .custom-select-trigger {
+      width: 100%;
+      min-height: 40px;
+      background-color: #1a0b2e;
+      color: #ffffff;
+      -webkit-text-fill-color: #ffffff;
+      border: 1px solid rgba(160, 90, 255, 0.4);
+      border-radius: 10px;
+      padding: 10px 36px 10px 12px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      user-select: none;
+      transition: border-color 0.2s;
+    }
+
+    .custom-select-trigger:hover,
+    .custom-select-trigger.open {
+      border-color: rgba(160, 90, 255, 0.8);
+    }
+
+    /* Arrow icon */
+    .custom-select-trigger::after {
+      content: "";
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid #9f5bff;
+      transition: transform 0.2s;
+    }
+
+    .custom-select-trigger.open::after {
+      transform: translateY(-50%) rotate(180deg);
+    }
+
+    .custom-select-options {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background-color: #1a0b2e;
+      border: 1px solid rgba(160, 90, 255, 0.4);
+      border-radius: 10px;
+      overflow: hidden;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .custom-select-options.open {
+      display: block;
+    }
+
+    .custom-select-option {
+      /* Styles handled via JS inline to guarantee browser override */
+    }
+
+    /* Hide the real select but keep it in DOM for script.js compatibility */
+    #preset-select {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-left">United</div>
@@ -18,7 +93,6 @@
       <a href="settings.html">Settings</a>
       <a href="about.html">About</a>
       <a href="chat/chat.html">Chat</a>
-   
     </div>
   </nav>
 
@@ -26,13 +100,20 @@
   <main class="container center">
     <div class="settings-card">
 
-      
-      
-
       <h2>Tab Cloaker</h2>
 
       <div class="settings-row">
+        <!-- Hidden real select for script.js compatibility -->
         <select id="preset-select"></select>
+
+        <!-- Custom visible dropdown -->
+        <div class="custom-select-wrapper" id="custom-select-wrapper">
+          <div class="custom-select-trigger" id="custom-select-trigger">
+            Loading...
+          </div>
+          <div class="custom-select-options" id="custom-select-options"></div>
+        </div>
+
         <button id="apply-preset">Apply</button>
       </div>
 
@@ -40,15 +121,80 @@
         Cloaks the tab to look like Google Drive, Amplify, or Clever.
       </p>
 
-      
-
     </div>
-
-    
   </main>
 
-  
-
   <script src="script.js"></script>
+  <script>
+    function initCustomSelect() {
+      const realSelect = document.getElementById("preset-select");
+      const trigger = document.getElementById("custom-select-trigger");
+      const optionsContainer = document.getElementById("custom-select-options");
+
+      if (!realSelect || realSelect.options.length === 0) {
+        console.log("Waiting for options... current count:", realSelect?.options.length);
+        setTimeout(initCustomSelect, 50);
+        return;
+      }
+
+      console.log("Options found:", realSelect.options.length);
+      Array.from(realSelect.options).forEach((o, i) => console.log(i, o.value, o.text));
+
+      function setTriggerText(text) {
+        console.log("Setting trigger text:", text);
+        trigger.innerHTML = '<span style="color:#fff;font-size:13px;">' + text + '</span>';
+      }
+
+      function buildOptions() {
+        optionsContainer.innerHTML = "";
+        Array.from(realSelect.options).forEach((opt, i) => {
+          const div = document.createElement("div");
+          div.setAttribute("style",
+            "padding:10px 12px;" +
+            "font-size:13px;" +
+            "color:#fff;" +
+            "cursor:pointer;" +
+            "background:" + (i === realSelect.selectedIndex ? "rgba(160,90,255,0.35)" : "transparent") + ";"
+          );
+          const label = opt.text || opt.value;
+          div.textContent = label;
+
+          div.addEventListener("mouseenter", () => div.style.background = "rgba(160,90,255,0.2)");
+          div.addEventListener("mouseleave", () => div.style.background = "transparent");
+          div.addEventListener("click", (e) => {
+            e.stopPropagation();
+            realSelect.value = opt.value;
+            realSelect.dispatchEvent(new Event("change"));
+            setTriggerText(opt.text || opt.value);
+            optionsContainer.classList.remove("open");
+            trigger.classList.remove("open");
+          });
+
+          optionsContainer.appendChild(div);
+          console.log("Built option:", label);
+        });
+
+        setTriggerText(realSelect.options[realSelect.selectedIndex]?.text || realSelect.options[realSelect.selectedIndex]?.value || "Select...");
+      }
+
+      buildOptions();
+
+      trigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        optionsContainer.classList.toggle("open");
+        trigger.classList.toggle("open");
+        console.log("Dropdown toggled, open:", optionsContainer.classList.contains("open"));
+      });
+
+      document.addEventListener("click", () => {
+        optionsContainer.classList.remove("open");
+        trigger.classList.remove("open");
+      });
+
+      new MutationObserver(buildOptions).observe(realSelect, { childList: true });
+    }
+
+    initCustomSelect();
+  </script>
 </body>
 </html>

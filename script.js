@@ -1,14 +1,12 @@
 /* ===============================
    LOAD CONFIG.JSON
 ================================ */
-
 let CONFIG = {};
 
 fetch("config.json")
   .then(r => r.json())
   .then(cfg => {
     CONFIG = cfg;
-
     initPresets();
     initQuotes();
     initSounds();
@@ -16,42 +14,40 @@ fetch("config.json")
   })
   .catch(err => console.error("Config failed:", err));
 
-
-
 /* ===============================
    PRESETS (TAB CLOAK)
 ================================ */
-
 function initPresets() {
   const select = document.getElementById("preset-select");
-  if (!select || !CONFIG.presets) return;
+  const applyBtn = document.getElementById("apply-preset");
 
-  select.innerHTML = "";
+  if (select && CONFIG.presets) {
+    select.innerHTML = "";
+    Object.keys(CONFIG.presets).forEach(key => {
+      const opt = document.createElement("option");
+      opt.value = key;
+      opt.textContent = CONFIG.presets[key].name;
+      select.appendChild(opt);
+    });
 
-  Object.keys(CONFIG.presets).forEach(key => {
-    const opt = document.createElement("option");
-    opt.value = key;
-    opt.textContent = CONFIG.presets[key].name;
-    select.appendChild(opt);
-  });
+    applyBtn?.addEventListener("click", () => {
+      const key = select.value;
+      localStorage.setItem("activePreset", key);
+      applyPreset(key);
+    });
+  }
 
-  document.getElementById("apply-preset")?.addEventListener("click", () => {
-    const key = select.value;
-    localStorage.setItem("activePreset", key);
-    applyPreset(key);
-  });
-
-  const saved =
-    localStorage.getItem("activePreset") ||
-    Object.keys(CONFIG.presets)[0];
-
-  select.value = saved;
-  applyPreset(saved);
+  // Auto-apply saved preset
+  const saved = localStorage.getItem("activePreset") || (CONFIG.presets && Object.keys(CONFIG.presets)[0]);
+  if (saved) {
+    if (select) select.value = saved;
+    applyPreset(saved);
+  }
 }
 
 function applyPreset(key) {
+  if (!CONFIG.presets || !CONFIG.presets[key]) return;
   const p = CONFIG.presets[key];
-  if (!p) return;
 
   document.title = p.title;
 
@@ -61,18 +57,13 @@ function applyPreset(key) {
     icon.rel = "icon";
     document.head.appendChild(icon);
   }
-
   icon.href = p.favicon;
 }
 
-
-
 /* ===============================
-   QUOTES (FIXED ROTATION)
+   QUOTES
 ================================ */
-
 let quoteIndex = 0;
-
 function initQuotes() {
   const quoteBox = document.getElementById("quote");
   if (!quoteBox || !CONFIG.quotes?.length) return;
@@ -81,33 +72,22 @@ function initQuotes() {
   quoteBox.textContent = CONFIG.quotes[quoteIndex];
 
   setInterval(() => {
-    quoteIndex++;
-
-    if (quoteIndex >= CONFIG.quotes.length) {
-      quoteIndex = 0;
-    }
-
+    quoteIndex = (quoteIndex + 1) % CONFIG.quotes.length;
     quoteBox.textContent = CONFIG.quotes[quoteIndex];
   }, 4000);
 }
 
-
-
 /* ===============================
-   SOUNDBOARD (27 PER PAGE)
+   SOUNDBOARD
 ================================ */
-
 let sounds = [];
 let page = 0;
 const PER_PAGE = 24;
-
 let currentAudio = null;
 let currentCard = null;
 
 function initSounds() {
-  const board = document.getElementById("soundboard");
-  if (!board) return;
-
+  if (!document.getElementById("soundboard")) return;
   sounds = CONFIG.sounds || [];
   renderSounds();
 }
@@ -115,7 +95,6 @@ function initSounds() {
 function renderSounds() {
   const board = document.getElementById("soundboard");
   if (!board) return;
-
   board.innerHTML = "";
 
   const start = page * PER_PAGE;
@@ -123,7 +102,6 @@ function renderSounds() {
 
   sounds.slice(start, end).forEach(file => {
     const name = file.replace(/\.[^/.]+$/, "");
-
     const card = document.createElement("div");
     card.className = "card";
 
@@ -140,117 +118,87 @@ function renderSounds() {
     const audio = new Audio(`sounds/${file}`);
 
     card.addEventListener("click", () => {
-
-      /* CLICK SAME SOUND = STOP */
       if (currentAudio === audio && !audio.paused) {
         audio.pause();
         audio.currentTime = 0;
         icon.textContent = "▶";
         card.classList.remove("playing");
         currentAudio = null;
-        currentCard = null;
         return;
       }
 
-      /* STOP OTHER SOUND */
       if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
-
-        if (currentCard) {
-          currentCard.classList.remove("playing");
-          currentCard.querySelector(".play-icon").textContent = "▶";
-        }
+        document.querySelectorAll(".card").forEach(c => {
+          c.classList.remove("playing");
+          const i = c.querySelector(".play-icon");
+          if(i) i.textContent = "▶";
+        });
       }
 
-      /* PLAY NEW */
       audio.play();
       icon.textContent = "❚❚";
       card.classList.add("playing");
-
       currentAudio = audio;
-      currentCard = card;
 
       audio.onended = () => {
         icon.textContent = "▶";
         card.classList.remove("playing");
         currentAudio = null;
-        currentCard = null;
       };
     });
-
     board.appendChild(card);
   });
 
   const info = document.getElementById("page-info");
   if (info) {
-    info.textContent =
-      `Page ${page + 1} / ${Math.max(1, Math.ceil(sounds.length / PER_PAGE))}`;
+    info.textContent = `Page ${page + 1} / ${Math.max(1, Math.ceil(sounds.length / PER_PAGE))}`;
   }
 }
-
-
 
 /* ===============================
    PAGINATION
 ================================ */
-
 document.getElementById("prev")?.addEventListener("click", () => {
-  if (page > 0) {
-    page--;
-    renderSounds();
-  }
+  if (page > 0) { page--; renderSounds(); }
 });
 
 document.getElementById("next")?.addEventListener("click", () => {
-  if ((page + 1) * PER_PAGE < sounds.length) {
-    page++;
-    renderSounds();
-  }
+  if ((page + 1) * PER_PAGE < sounds.length) { page++; renderSounds(); }
 });
 
-
-
-
 /* ===============================
-   GAMES (HTML + EMULATED)
+   GAMES (ABOUT:BLANK CLOAK)
 ================================ */
+function openInBlank(url) {
+  const win = window.open("about:blank");
+  if (!win) return;
+
+  win.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Loading...</title>
+      <style>
+        html, body { margin: 0; width: 100%; height: 100%; background: black; }
+        iframe { width: 100%; height: 100%; border: none; }
+      </style>
+    </head>
+    <body><iframe src="${url}" allowfullscreen></iframe></body>
+    </html>
+  `);
+  win.document.close();
+}
 
 function initGames() {
-  const cards = document.querySelectorAll(".game-card");
-  if (!cards.length) return;
-
-  cards.forEach(card => {
-    card.style.cursor = "pointer";
-
+  document.querySelectorAll(".game-card").forEach(card => {
     card.addEventListener("click", () => {
+      const url = card.classList.contains("ds-game") 
+        ? `/emulator.html?rom=${encodeURIComponent(card.dataset.rom)}`
+        : card.dataset.game;
 
-      /* CASE 1: EMULATED GAME (DS / ROM) */
-      if (card.classList.contains("ds-game")) {
-        const rom = card.dataset.rom;
-
-        if (!rom) {
-          console.warn("Missing data-rom on emulated card:", card);
-          return;
-        }
-
-        window.location.href =
-          `/emulator.html?rom=${encodeURIComponent(rom)}`;
-        return;
-      }
-
-      /* CASE 2: NORMAL HTML GAME */
-      const link = card.dataset.game;
-
-      if (!link) {
-        console.warn("Missing data-game on card:", card);
-        return;
-      }
-
-      window.location.href = link;
+      if (url) openInBlank(url);
     });
   });
 }
-
-
-
