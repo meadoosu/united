@@ -9,12 +9,16 @@
     "appId": "appid"
   },
 
+    "giphy": {
+    "key": "giphy-key"
+  },
+
   "quotes": [
     "You can put anything here and itll show up in the nav bar",
     "Try it out for yourself!"
   ],
 
-  "sounds": [
+ "sounds": [
     "BAD PARENTING FUNK.mp3",
     "bone crack.mp3",
     "city boiii.mp3",
@@ -60,12 +64,16 @@
     "noticed (gay).mp3",
     "discord notification.mp3",
     "check mark ding.mp3",
-    "incorrect buzzer dinger.mp3",
+    "incorrect buzzer (earrape).mp3",
     "fart.mp3",
     "mods ban that guy.mp3",
     "enriquee!.mp3",
-    "rip granny she got hit by a bazooka.mp3"
+    "rip granny she got hit by a bazooka.mp3",
+    "apple pay.mp3",
+    "metal pipe.mp3",
+    "baby laughing meme.mp3"
   ],
+  
   "presets": {
       "Google Drive": {
         "title": "Home - Google Drive",
