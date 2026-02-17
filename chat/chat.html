@@ -1,189 +1,777 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Global Chat</title>
 
-  <!-- Firebase -->
+<html>
+
+<head>
+
+  <title>Chat</title>
+
+  <link rel="stylesheet" href="../style.css">
+
+
+
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
+
+
   <style>
+
+    /* ---------- LAYOUT ---------- */
+
     body {
-      margin: 0;
+
+      display: flex;
+
+      flex-direction: column;
+
       height: 100vh;
-      background: #050008;
-      color: #e9dcff;
-      font-family: system-ui, sans-serif;
-      display: flex;
-      flex-direction: column;
+
     }
 
-    /* NAVBAR */
-    .navbar {
-      display: flex;
-      align-items: center;
-      padding: 14px 24px;
-      margin: 12px;
-      border-radius: 16px;
-      background: linear-gradient(
-        90deg,
-        rgba(140, 60, 255, 0.35),
-        rgba(90, 30, 180, 0.35)
-      );
-      box-shadow:
-        0 0 20px rgba(160, 90, 255, 0.4),
-        inset 0 0 20px rgba(140, 60, 255, 0.15);
-    }
 
-    .nav-left { font-weight: 700; }
-    .nav-center {
-      margin: auto;
-      opacity: 0.75;
-      font-style: italic;
-    }
-    .nav-right {
-      display: flex;
-      gap: 12px;
-    }
-    .nav-right a {
-      text-decoration: none;
-      padding: 6px 14px;
-      border-radius: 10px;
-      background: rgba(30, 15, 46, 0.85);
-      color: #e9dcff;
-      font-size: 14px;
-    }
 
-    /* CHAT */
-    #chat-box {
+    #chat-layout {
+
       flex: 1;
-      padding: 16px;
-      overflow-y: auto;
+
       display: flex;
-      flex-direction: column;
-      gap: 14px;
+
+      padding: 10px 16px;
+
+      gap: 16px;
+
+      overflow: hidden;
+
     }
+
+
+
+    /* ---------- CHAT AREA ---------- */
+
+
+
+    #chat-box {
+
+      flex: 1;
+
+      padding: 10px 16px;
+
+      overflow-y: auto;
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 8px;
+
+      font-size: 13px;
+
+    }
+
+
 
     .msg {
+
       display: flex;
-      gap: 10px;
-      max-width: 75%;
-      animation: slideInLeft 0.25s ease-out;
+
+      gap: 6px;
+
+      max-width: 55%;
+
     }
 
-    /* YOUR MESSAGES */
+
+
     .msg.mine {
-      margin-left: auto;              /* 🔑 PUSH HARD RIGHT */
+
+      margin-left: auto;
+
       flex-direction: row-reverse;
-      animation: slideInRight 0.25s ease-out;
+
     }
+
+
 
     .avatar {
-      width: 36px;
-      height: 36px;
+
+      width: 28px;
+
+      height: 28px;
+
       border-radius: 50%;
-      background: linear-gradient(135deg, #9f5bff, #5b2bff);
+
+      background: #9f5bff;
+
       display: flex;
+
       align-items: center;
+
       justify-content: center;
+
       font-weight: bold;
+
+      font-size: 12px;
+
       color: black;
+
       flex-shrink: 0;
+
     }
+
+
 
     .bubble {
+
       background: #140a22;
-      padding: 10px 14px;
-      border-radius: 14px;
+
+      padding: 6px 10px;
+
+      border-radius: 12px;
+
+      line-height: 1.3;
+
     }
+
+
 
     .msg.mine .bubble {
+
       background: #2a0d4d;
-      text-align: right;
+
     }
+
+
 
     .user {
-      font-size: 12px;
-      opacity: 0.6;
-      margin-bottom: 4px;
+
+      font-size: 11px;
+
+      opacity: .6;
+
+      margin-bottom: 2px;
+
     }
 
-    /* INPUT BAR */
-    .input-bar {
-      display: flex;
-      gap: 10px;
-      padding: 12px;
-      background: #0d0716;
-      border-top: 1px solid rgba(255,255,255,0.08);
-    }
 
-    .input-bar input {
-      flex: 1;
-      padding: 12px 16px;
-      border-radius: 14px;
-      border: none;
-      outline: none;
-      background: #1a0b2e;
-      color: #e9dcff;
-      font-size: 15px;
-    }
 
     .time {
-      font-size: 11px;
-      opacity: 0.45;
+
+      font-size: 10px;
+
+      opacity: .4;
+
+      margin-top: 3px;
+
+    }
+
+
+
+    .bubble img {
+
+      max-width: 300px;
+
+      border-radius: 8px;
+
       margin-top: 4px;
-      white-space: nowrap;
+
+      display: block;
+
     }
 
-    .send-btn {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-      background: #9f5bff;
+
+
+
+
+
+
+    /* ---------- SIDE PANEL ---------- */
+
+
+
+    #side-panel {
+
+      width: 200px;
+
+      background: #0e0718;
+
+      padding: 14px;
+
+      border-radius: 18px;
+
+      box-shadow:
+
+        0 0 25px rgba(150, 80, 255, 0.45),
+
+        inset 0 0 15px rgba(150, 80, 255, 0.1);
+
+      font-size: 13px;
+
+    }
+
+
+
+
+
+    .msg {
+
       display: flex;
+
+      gap: 10px;
+
+      max-width: 70%;
+
+      animation: popIn 0.25s ease-out;
+
+    }
+
+
+
+    .msg.mine {
+
+      margin-left: auto;
+
+      flex-direction: row-reverse;
+
+    }
+
+
+
+    @keyframes popIn {
+
+      from {
+
+        opacity: 0;
+
+        transform: translateY(8px) scale(0.96);
+
+      }
+
+      to {
+
+        opacity: 1;
+
+        transform: translateY(0) scale(1);
+
+      }
+
+    }
+
+
+
+    #side-panel b {
+
+      display: block;
+
+      margin-bottom: 6px;
+
+      font-size: 12px;
+
+      opacity: .7;
+
+      letter-spacing: 0.5px;
+
+    }
+
+
+
+    #online-users div,
+
+    #offline-users div {
+
+      margin-bottom: 4px;
+
+      font-size: 12px;
+
+    }
+
+
+
+    /* ---------- INPUT ---------- */
+
+
+
+    .input-bar {
+
+      display: flex;
+
+      gap: 8px;
+
+      padding: 10px 16px;
+
+      background: #0e0718;
+
+      border-top: 1px solid rgba(255,255,255,.05);
+
+    }
+
+
+
+    .input-bar input {
+
+      flex: 1;
+
+      background: #1a0b2e;
+
+      border: none;
+
+      color: white;
+
+      padding: 8px 12px;
+
+      border-radius: 10px;
+
+      font-size: 13px;
+
+    }
+
+
+
+    .input-bar button {
+
+      border: none;
+
+      border-radius: 10px;
+
+      background: #9f5bff;
+
+      padding: 8px 12px;
+
+      font-size: 13px;
+
+      cursor: pointer;
+
+    }
+
+
+
+    .input-bar .gif-btn {
+
+      background: #7c3aed;
+
+      width: 38px;
+
+      height: 38px;
+
+      display: flex;
+
       align-items: center;
+
       justify-content: center;
-      font-size: 18px;
+
+      padding: 0;
+
     }
 
-    /* ANIMATIONS */
-    @keyframes slideInRight {
-      from { opacity: 0; transform: translateX(40px); }
-      to   { opacity: 1; transform: translateX(0); }
+
+
+    .input-bar .gif-btn:hover {
+
+      background: #8b5cf6;
+
     }
 
-    @keyframes slideInLeft {
-      from { opacity: 0; transform: translateX(-40px); }
-      to   { opacity: 1; transform: translateX(0); }
+
+
+
+
+
+
+    /* ---------- QUOTE FADE ---------- */
+
+
+
+    .nav-center {
+
+      opacity: 0;
+
+      transition: opacity 0.4s ease;
+
     }
+
+
+
+    .nav-center.show {
+
+      opacity: .75;
+
+    }
+
+
+
+    /* ---------- GIF MODAL ---------- */
+
+
+
+    #gif-modal {
+
+      position: fixed;
+
+      top: 0;
+
+      left: 0;
+
+      width: 100%;
+
+      height: 100%;
+
+      background: rgba(0, 0, 0, 0.8);
+
+      display: none;
+
+      align-items: center;
+
+      justify-content: center;
+
+      z-index: 1000;
+
+    }
+
+
+
+    #gif-modal.active {
+
+      display: flex;
+
+    }
+
+
+
+    .gif-container {
+
+      background: #1a0b2e;
+
+      border-radius: 16px;
+
+      padding: 20px;
+
+      width: 500px;
+
+      max-width: 90vw;
+
+      max-height: 80vh;
+
+      display: flex;
+
+      flex-direction: column;
+
+      box-shadow: 0 0 40px rgba(150, 80, 255, 0.5);
+
+    }
+
+
+
+    .gif-search-bar {
+
+      display: flex;
+
+      gap: 8px;
+
+      margin-bottom: 16px;
+
+    }
+
+
+
+    .gif-search-bar input {
+
+      flex: 1;
+
+      background: #0e0718;
+
+      border: 1px solid rgba(159, 91, 255, 0.3);
+
+      color: white;
+
+      padding: 10px 14px;
+
+      border-radius: 10px;
+
+      font-size: 13px;
+
+    }
+
+
+
+    .gif-search-bar input:focus {
+
+      outline: none;
+
+      border-color: #9f5bff;
+
+    }
+
+
+
+    .gif-search-bar button {
+
+      background: #9f5bff;
+
+      border: none;
+
+      color: white;
+
+      padding: 10px 20px;
+
+      border-radius: 10px;
+
+      cursor: pointer;
+
+      font-size: 13px;
+
+    }
+
+
+
+    .gif-search-bar button:hover {
+
+      background: #8b5cf6;
+
+    }
+
+
+
+    .gif-grid {
+
+      display: grid;
+
+      grid-template-columns: repeat(3, 1fr);
+
+      gap: 10px;
+
+      overflow-y: auto;
+
+      max-height: 450px;
+
+      padding-right: 8px;
+
+    }
+
+
+
+    .gif-grid::-webkit-scrollbar {
+
+      width: 6px;
+
+    }
+
+
+
+    .gif-grid::-webkit-scrollbar-track {
+
+      background: #0e0718;
+
+      border-radius: 3px;
+
+    }
+
+
+
+    .gif-grid::-webkit-scrollbar-thumb {
+
+      background: #9f5bff;
+
+      border-radius: 3px;
+
+    }
+
+
+
+    .gif-item {
+
+      cursor: pointer;
+
+      border-radius: 8px;
+
+      overflow: hidden;
+
+      aspect-ratio: 1;
+
+      background: #0e0718;
+
+      transition: transform 0.2s;
+
+    }
+
+
+
+    .gif-item:hover {
+
+      transform: scale(1.05);
+
+    }
+
+
+
+    .gif-item img {
+
+      width: 100%;
+
+      height: 100%;
+
+      object-fit: cover;
+
+    }
+
+
+
+    .gif-close {
+
+      position: absolute;
+
+      top: 20px;
+
+      right: 20px;
+
+      background: #9f5bff;
+
+      border: none;
+
+      color: white;
+
+      width: 32px;
+
+      height: 32px;
+
+      border-radius: 50%;
+
+      cursor: pointer;
+
+      font-size: 24px;
+
+      line-height: 1;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      font-family: Arial, sans-serif;
+
+    }
+
+
+
+    .gif-close:hover {
+
+      background: #8b5cf6;
+
+    }
+
   </style>
+
 </head>
+
+
 
 <body>
 
-  <nav class="navbar">
-    <div class="nav-left">United</div>
-    <div class="nav-center" id="quote"></div>
-    <div class="nav-right">
-      <a href="../index.html">Soundboard</a>
-      <a href="../game.html">Games</a>
-      <a href="../settings.html">Settings</a>
-      <a href="../about.html">About</a>
-      <a href="#">Chat</a>
 
-    </div>
-  </nav>
+
+<nav class="navbar">
+
+  <div class="nav-left">United</div>
+
+  <div class="nav-center" id="quote"></div>
+
+  <div class="nav-right">
+
+    <a href="../index.html">Soundboard</a>
+
+    <a href="../game.html">Games</a>
+
+    <a href="../settings.html">Settings</a>
+
+    <a href="../about.html">About</a>
+
+    <a href="#">Chat</a>
+
+  </div>
+
+</nav>
+
+
+
+<div id="chat-layout">
 
   <div id="chat-box"></div>
 
-  <div class="input-bar">
-    <input id="message" placeholder="Message..." />
-    <button class="send-btn" id="send-btn">✈️</button>
+
+
+  <div id="side-panel">
+
+    <b>Online</b>
+
+    <div id="online-users"></div>
+
+    <br>
+
+    <b>Offline</b>
+
+    <div id="offline-users"></div>
+
   </div>
 
-  <script src="chat.js"></script>
+</div>
+
+
+
+
+
+
+
+<div class="input-bar">
+
+  <input id="message" placeholder="Message...">
+
+  <button class="gif-btn" id="gif-btn">
+
+    <span style="font-weight: bold; font-size: 14px; letter-spacing: -0.5px;">GIF</span>
+
+  </button>
+
+  <button class="send-btn" id="send-btn">
+
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="white">
+
+      <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
+
+    </svg>
+
+  </button>
+
+</div>
+
+
+
+<!-- GIF Modal -->
+
+<div id="gif-modal">
+
+  <button class="gif-close" id="gif-close">x</button>
+
+  <div class="gif-container">
+
+    <div class="gif-search-bar">
+
+      <input type="text" id="gif-search" placeholder="Search GIFs...">
+
+      <button id="gif-search-btn">Search</button>
+
+    </div>
+
+    <div class="gif-grid" id="gif-grid"></div>
+
+  </div>
+
+</div>
+
+
+
+<script src="chat.js"></script>
+
 </body>
+
 </html>
